@@ -11,11 +11,23 @@ app.use(cors(corsOptions));
 app.use(json());
 app.use(morgan("dev"));
 
+let returnValue = {
+  data: {},
+  success: true,
+  statusCode: 200
+}
+
+function clearData() {
+  returnValue.data = {};
+}
+
 app.get("/teams", (req, res) => {
   try {
     pool.connect(async (error, client, release) => {
       let resp = await client.query(`SELECT * FROM teams`);
-      res.send(resp.rows);
+      returnValue.data = resp.rows.length > 0 ? resp.rows : {};
+      res.status(200).send(returnValue);
+      clearData();
     });
   } catch (error) {
     console.log(error);
@@ -31,7 +43,7 @@ app.post("/addTeams", (req, res) => {
               VALUES (${data.groupNumber}, '${data.teamName}', '${data.dateCreated}')
               `);
       });
-      res.status(200).send({ success: true });
+      res.status(200).send(returnValue);
     });
   } catch (error) {
     console.log(error);
@@ -47,7 +59,7 @@ app.post("/matches", (req, res) => {
             VALUES ('${data.teamHome}', '${data.teamAway}', ${data.teamHomeGoals}, ${data.teamAwayGoals})
         `);
       });
-      res.status(200).send({ success: true });
+      res.status(200).send(returnValue);
     });
   } catch (error) {
     console.log(error);
@@ -58,7 +70,9 @@ app.get("/getMatches", (req, res) => {
   try {
     pool.connect(async (error, client, release) => {
       let resp = await client.query(`SELECT * FROM matches`);
-      res.send(resp.rows);
+      returnValue.data = resp.rows.length ? resp.rows : {};
+      res.status(200).send(returnValue);
+      clearData();
     });
   } catch (error) {
     console.log(error);
@@ -107,7 +121,9 @@ app.get("/points/:groupNumber", (req, res) => {
         GROUP BY T.team_name, date_created, group_number
         ORDER BY points DESC, goals_scored DESC, special_points DESC, to_date(date_created, 'DD/MM') ASC
         `);
-      res.send(resp.rows);
+      returnValue.data = resp.rows.length > 0 ? resp.rows : {};
+      res.status(200).send(returnValue);
+      clearData();
     });
   } catch (error) {
     console.log(error);
@@ -118,12 +134,11 @@ app.post("/deleteAll", (req, res) => {
   try {
     pool.connect(async (error, client, release) => {
       let resp = await client.query(`TRUNCATE teams, matches`);
-      res.send({success: true});
+      res.send(returnValue);
     });
   } catch (error) {
     console.log(error);
   }
 });
-
 
 app.listen(PORT, () => console.log(`Server running on port: ${PORT}`));
