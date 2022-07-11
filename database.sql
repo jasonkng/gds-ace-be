@@ -1,8 +1,8 @@
 --psql -U postgres
+--\c into football
+--heroku pg:psql
 
 CREATE DATABASE football;
-
---\c into football
 
 CREATE TABLE teams(
     team_id SERIAL PRIMARY KEY,
@@ -13,7 +13,7 @@ CREATE TABLE teams(
 
 SELECT * FROM teams;
 
-INSERT INTO teams(team_name, group_number, date_created) VALUES('groupD', 1, '15/07');
+INSERT INTO teams(team_name, group_number, date_created) VALUES('groupC', 1, '12/07');
 
 CREATE TABLE matches(
   match_id SERIAL PRIMARY KEY,
