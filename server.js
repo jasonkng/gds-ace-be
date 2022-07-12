@@ -38,6 +38,7 @@ app.get("/teams", (req, res) => {
 app.post("/addTeams", (req, res) => {
   try {
     pool.connect((error, client, release) => {
+      console.log(req.body.body)
       req.body.teams.forEach(async (data) => {
         await client.query(`
           INSERT INTO teams(group_number, team_name, date_created)
@@ -132,8 +133,20 @@ app.get("/points/:groupNumber", (req, res) => {
     console.error(error);
   }
 });
+//DELETE FROM matches WHERE match_id = 61
+app.delete("/match/:matchId", (req, res) => {
+  try {
+    pool.connect(async (error, client, release) => {
+      let resp = await client.query(`DELETE FROM matches WHERE match_id = ${req.params.matchId}`);
+      res.send(returnValue);
+      client.release();
+    });
+  } catch (error) {
+    console.error(error);
+  }
+})
 
-app.post("/deleteAll", (req, res) => {
+app.delete("/deleteAll", (req, res) => {
   try {
     pool.connect(async (error, client, release) => {
       let resp = await client.query(`TRUNCATE teams, matches`);
