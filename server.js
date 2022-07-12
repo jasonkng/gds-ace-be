@@ -31,7 +31,7 @@ app.get("/teams", (req, res) => {
       client.release();
     });
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 });
 
@@ -40,15 +40,14 @@ app.post("/addTeams", (req, res) => {
     pool.connect((error, client, release) => {
       req.body.teams.forEach(async (data) => {
         await client.query(`
-              INSERT INTO teams(group_number, team_name, date_created)
-              VALUES (${data.groupNumber}, '${data.teamName}', '${data.dateCreated}')
-              `);
+          INSERT INTO teams(group_number, team_name, date_created)
+          VALUES (${data.groupNumber}, '${data.teamName}', '${data.dateCreated}')`);
       });
       res.status(200).send(returnValue);
       client.release();
     });
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 });
 
@@ -58,14 +57,13 @@ app.post("/matches", (req, res) => {
       req.body.matches.forEach(async (data) => {
         await client.query(`
             INSERT INTO matches(team_home, team_away, team_home_goals, team_away_goals)
-            VALUES ('${data.teamHome}', '${data.teamAway}', ${data.teamHomeGoals}, ${data.teamAwayGoals})
-        `);
+            VALUES ('${data.teamHome}', '${data.teamAway}', ${data.teamHomeGoals}, ${data.teamAwayGoals})`);
       });
       res.status(200).send(returnValue);
       client.release();
     });
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 });
 
@@ -79,7 +77,7 @@ app.get("/getMatches", (req, res) => {
       client.release();
     });
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 });
 
@@ -131,7 +129,7 @@ app.get("/points/:groupNumber", (req, res) => {
       client.release();
     });
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 });
 
@@ -143,7 +141,7 @@ app.post("/deleteAll", (req, res) => {
       client.release();
     });
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 });
 
