@@ -28,6 +28,7 @@ app.get("/teams", (req, res) => {
       returnValue.data = resp.rows.length > 0 ? resp.rows : {};
       res.status(200).send(returnValue);
       clearData();
+      client.release();
     });
   } catch (error) {
     console.log(error);
@@ -44,6 +45,7 @@ app.post("/addTeams", (req, res) => {
               `);
       });
       res.status(200).send(returnValue);
+      client.release();
     });
   } catch (error) {
     console.log(error);
@@ -60,6 +62,7 @@ app.post("/matches", (req, res) => {
         `);
       });
       res.status(200).send(returnValue);
+      client.release();
     });
   } catch (error) {
     console.log(error);
@@ -73,6 +76,7 @@ app.get("/getMatches", (req, res) => {
       returnValue.data = resp.rows.length ? resp.rows : {};
       res.status(200).send(returnValue);
       clearData();
+      client.release();
     });
   } catch (error) {
     console.log(error);
@@ -124,6 +128,7 @@ app.get("/points/:groupNumber", (req, res) => {
       returnValue.data = resp.rows.length > 0 ? resp.rows : {};
       res.status(200).send(returnValue);
       clearData();
+      client.release();
     });
   } catch (error) {
     console.log(error);
@@ -135,6 +140,7 @@ app.post("/deleteAll", (req, res) => {
     pool.connect(async (error, client, release) => {
       let resp = await client.query(`TRUNCATE teams, matches`);
       res.send(returnValue);
+      client.release();
     });
   } catch (error) {
     console.log(error);
