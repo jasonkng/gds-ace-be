@@ -86,43 +86,43 @@ app.get("/points/:groupNumber", (req, res) => {
   try {
     pool.connect(async (error, client, release) => {
       let resp = await client.query(`
-        SELECT team_name, 
-        SUM(points)/2 AS points, 
-        SUM(mm.team_home_goals)/2 AS goals_scored,
-        SUM(special_points)/2 AS special_points,
-        date_created, group_number
-        FROM teams T
-        LEFT JOIN
-        (SELECT team_home AS team, team_home_goals, team_away_goals,
-            CASE WHEN team_home_goals > team_away_goals THEN 3
-            WHEN team_home_goals = team_away_goals THEN 1
-            ELSE 0
-            END AS points
-        FROM matches UNION ALL
-        SELECT team_away AS team, team_away_goals, team_home_goals,
-            CASE WHEN team_away_goals > team_home_goals THEN 3
-            WHEN team_away_goals = team_home_goals THEN 1
-            ELSE 0
-            END AS points 
-        FROM matches) mm
-        ON T.team_name = mm.team
-        LEFT JOIN
-        (SELECT team_home AS team, team_home_goals, team_away_goals,
-            CASE WHEN team_home_goals > team_away_goals THEN 5
-            WHEN team_home_goals = team_away_goals THEN 3
-            ELSE 1
-            END AS special_points
-        FROM matches UNION ALL
-        SELECT team_away AS team, team_away_goals, team_home_goals,
-            CASE WHEN team_away_goals > team_home_goals THEN 5
-            WHEN team_away_goals = team_home_goals THEN 3
-            ELSE 1
-            END AS special_points 
-        FROM matches) nn
-        ON mm.team = nn.team
-        WHERE group_number = ${req.params.groupNumber}
-        GROUP BY T.team_name, date_created, group_number
-        ORDER BY points DESC, goals_scored DESC, special_points DESC, to_date(date_created, 'DD/MM') ASC
+      SELECT team_name, 
+      SUM(points)/2 AS points, 
+      SUM(mm.team_home_goals)/2 AS goals_scored,
+      SUM(special_points)/2 AS special_points,
+      date_created, group_number
+      FROM teams T
+      LEFT JOIN
+      (SELECT team_home AS team, team_home_goals, team_away_goals,
+          CASE WHEN team_home_goals > team_away_goals THEN 3
+          WHEN team_home_goals = team_away_goals THEN 1
+          ELSE 0
+          END AS points
+      FROM matches UNION ALL
+      SELECT team_away AS team, team_away_goals, team_home_goals,
+          CASE WHEN team_away_goals > team_home_goals THEN 3
+          WHEN team_away_goals = team_home_goals THEN 1
+          ELSE 0
+          END AS points 
+      FROM matches) mm
+      ON T.team_name = mm.team
+      LEFT JOIN
+      (SELECT team_home AS team, team_home_goals, team_away_goals,
+          CASE WHEN team_home_goals > team_away_goals THEN 5
+          WHEN team_home_goals = team_away_goals THEN 3
+          ELSE 1
+          END AS special_points
+      FROM matches UNION ALL
+      SELECT team_away AS team, team_away_goals, team_home_goals,
+          CASE WHEN team_away_goals > team_home_goals THEN 5
+          WHEN team_away_goals = team_home_goals THEN 3
+          ELSE 1
+          END AS special_points 
+      FROM matches) nn
+      ON mm.team = nn.team
+      WHERE group_number = ${req.params.groupNumber}
+      GROUP BY T.team_name, date_created, group_number
+      ORDER BY points DESC nulls LAST, goals_scored DESC nulls LAST, special_points DESC nulls LAST, to_date(date_created, 'DD/MM') ASC
         `);
       returnValue.data = resp.rows.length > 0 ? resp.rows : {};
       res.status(200).send(returnValue);
