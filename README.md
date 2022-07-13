@@ -1,9 +1,8 @@
-GDS-ACE-BE
+**BE code and Postgresql hosted on heroku**
 
-BE code and postgresql hosted on heroku
-
-To run project locally, use
+**To run project locally:**
 `npm run dev`
 
-database.sql contains all code to setup database locally
+**database.sql contains all commands to setup postgres locally**
+
 
